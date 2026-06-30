@@ -120,4 +120,4 @@ The decoupled design (state in `Robotstate`, kinematics in `SpiderLeg`, orchestr
 
 ## License
 
-MIT License — see [LICENSE](./LICENSE) for details.
+CC BY-NC-SA 4.0 (Attribution-NonCommercial-ShareAlike) — see [LICENSE](./LICENSE) for details. Free for personal/non-commercial use and modification with credit to `9veedz`; selling this project or derivatives of it is not permitted.
