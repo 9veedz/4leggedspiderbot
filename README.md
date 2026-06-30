@@ -57,17 +57,9 @@ SpiderRobot/
 └── Webpage.h           # Embedded HTML/CSS/JS control panel (served from flash)
 ```
 
-## Why Object-Oriented Design
+## Code Structure Notes
 
-The robot is structured as a `Spider` class composed of four `SpiderLeg` objects, rather than a flat set of global functions juggling 12 servo pins directly. This pays off in a few concrete ways:
-
-- **Encapsulation per leg** — each `SpiderLeg` instance owns its own state (current/target X/Y/Z, pin numbers, mirrored flag) and exposes a small, consistent interface (`setTarget()`, `lift()`, `down()`, `strideF()`, `home()`, `calculateIK()`). The `Spider` class never has to know *how* a leg converts a target position into servo angles — it just tells the leg where to go.
-- **Mirroring handled once, internally** — legs 1 and 2 are mechanically mirrored relative to legs 0 and 3. That asymmetry is resolved entirely inside `SpiderLeg` (in the constructor and IK/PWM output), so the rest of the codebase (gait logic, body posture, web server) can treat all four legs identically.
-- **Easier to scale leg count** — because each leg is a self-contained object constructed with just `(coxaPin, femurPin, tibiaPin, legId)`, adding a 5th or 6th leg (e.g. a hexapod variant) is mostly a matter of declaring another `SpiderLeg` instance and extending the `legs[]`/`legHeights[]`/`legWidths[]` arrays in `Robotstate` — the IK math, calibration, and PWM output logic don't need to change at all.
-- **Gait logic stays declarative** — `Spider::walkForward()` and `walkReverse()` are written as a sequence of calls like `leg0.lift(...)`, `leg2.strideF(...)`, `leg3.home()`. Because each leg already knows how to interpret these calls correctly (including mirroring), new gait patterns can be composed by just calling different combinations of leg primitives — no per-leg trigonometry needs to be touched.
-- **Shared global state, isolated per-leg logic** — `Robotstate` centralizes things that genuinely are global (body height/width/pitch/roll, current robot state, persistence), while per-leg specifics (calibration offsets, servo limits, joint angles) stay inside `LegParams` and `SpiderLeg`. This separation keeps the kinematics code reusable independent of how many legs exist or how the body is posed.
-
-In short: the OOP structure turns "12 servos with quirky mirrored wiring" into "4 interchangeable leg objects with a uniform API," which is what makes gait sequencing, calibration, and potential future expansion (more legs, different chassis shapes) straightforward to extend without rewriting the core math.
+Each leg is its own object with its own pins and position, and handles its own mirroring internally. `Spider` just tells legs where to go. Makes gait code easier to read, and adding more legs later is mostly just adding more leg objects.
 
 ## Getting Started
 
