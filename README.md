@@ -1,5 +1,7 @@
 # ESP32 Quadruped Spider Robot
 
+> Built largely through vibe coding — iterating with an AI assistant rather than writing every line from scratch. Logic has been tested where possible, but review the code yourself before trusting it on real hardware, especially the servo angle limits.
+
 A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi access point and web-based control interface for live tuning, calibration, and gait control — no app required, just a browser.
 
 ## Features
@@ -18,6 +20,9 @@ A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi
 - PCA9685 16-channel PWM/servo driver (I2C)
 - 12x servos (3 per leg: coxa, femur, tibia)
 - 4-leg chassis, with legs 1 and 2 mirrored relative to legs 0 and 3
+- 3D-printed body: [Thingiverse Thing #2204279](https://www.thingiverse.com/thing:2204279), based on the design from [Instructables: DIY Spider Robot / Quad Robot / Quadruped](https://www.instructables.com/DIY-Spider-RobotQuad-robot-Quadruped/)
+
+> **Important — before assembling the legs onto the 3D-printed body:** power each servo individually and set it to **90 degrees** *before* mounting the horn and locking the leg segments onto the printed body. The codebase has calls toward a `spiderCalibrate()` / `calibrateServos()` path, but it is not a complete, working calibration setup as-is — don't rely on it out of the box. Manually centering each servo to 90° before assembly (e.g. with a basic standalone test sketch) is the safer approach until calibration is properly wired up. The IK math and default offsets (`offC`/`offF`/`offT` = 90) assume each joint's mechanical zero/center point lines up with 90° on the servo. If a horn is attached and the leg geometry locked in at the wrong angle, the leg will be physically offset from where the code thinks it is, and you'll fight it with calibration offsets indefinitely instead of starting from a clean baseline.
 
 | Leg | Coxa Pin | Femur Pin | Tibia Pin | Position          | Mirrored |
 |-----|----------|-----------|-----------|--------------------|----------|
@@ -25,6 +30,18 @@ A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi
 | 1   | 3        | 4         | 5         | Front-right        | Yes      |
 | 2   | 6        | 7         | 8         | Back-left          | Yes      |
 | 3   | 9        | 10        | 11        | Back-right         | No       |
+
+### Leg Segment Lengths
+
+Each leg has three segments, defined as constants in `SpiderLeg.cpp` and used directly in the inverse kinematics calculations:
+
+| Segment | Joint  | Length (mm) | Description                                |
+|---------|--------|-------------|---------------------------------------------|
+| L1      | Coxa   | 27.5        | Hip joint offset, rotates leg in X/Y plane  |
+| L2      | Femur  | 55.0        | Upper leg segment                           |
+| L3      | Tibia  | 77.5        | Lower leg segment, reaches the ground       |
+
+These are physical measurements of the chassis/leg hardware, used by `calculateIK()` to solve for coxa, femur, and tibia joint angles from a target X/Y/Z foot position. If you build this on different hardware, these three constants are the first thing to update to match your own leg dimensions.
 
 ## Project Structure
 
@@ -39,6 +56,18 @@ SpiderRobot/
 ├── Spiderserver.h / .cpp # WiFi AP, captive portal, WebSocket server
 └── Webpage.h           # Embedded HTML/CSS/JS control panel (served from flash)
 ```
+
+## Why Object-Oriented Design
+
+The robot is structured as a `Spider` class composed of four `SpiderLeg` objects, rather than a flat set of global functions juggling 12 servo pins directly. This pays off in a few concrete ways:
+
+- **Encapsulation per leg** — each `SpiderLeg` instance owns its own state (current/target X/Y/Z, pin numbers, mirrored flag) and exposes a small, consistent interface (`setTarget()`, `lift()`, `down()`, `strideF()`, `home()`, `calculateIK()`). The `Spider` class never has to know *how* a leg converts a target position into servo angles — it just tells the leg where to go.
+- **Mirroring handled once, internally** — legs 1 and 2 are mechanically mirrored relative to legs 0 and 3. That asymmetry is resolved entirely inside `SpiderLeg` (in the constructor and IK/PWM output), so the rest of the codebase (gait logic, body posture, web server) can treat all four legs identically.
+- **Easier to scale leg count** — because each leg is a self-contained object constructed with just `(coxaPin, femurPin, tibiaPin, legId)`, adding a 5th or 6th leg (e.g. a hexapod variant) is mostly a matter of declaring another `SpiderLeg` instance and extending the `legs[]`/`legHeights[]`/`legWidths[]` arrays in `Robotstate` — the IK math, calibration, and PWM output logic don't need to change at all.
+- **Gait logic stays declarative** — `Spider::walkForward()` and `walkReverse()` are written as a sequence of calls like `leg0.lift(...)`, `leg2.strideF(...)`, `leg3.home()`. Because each leg already knows how to interpret these calls correctly (including mirroring), new gait patterns can be composed by just calling different combinations of leg primitives — no per-leg trigonometry needs to be touched.
+- **Shared global state, isolated per-leg logic** — `Robotstate` centralizes things that genuinely are global (body height/width/pitch/roll, current robot state, persistence), while per-leg specifics (calibration offsets, servo limits, joint angles) stay inside `LegParams` and `SpiderLeg`. This separation keeps the kinematics code reusable independent of how many legs exist or how the body is posed.
+
+In short: the OOP structure turns "12 servos with quirky mirrored wiring" into "4 interchangeable leg objects with a uniform API," which is what makes gait sequencing, calibration, and potential future expansion (more legs, different chassis shapes) straightforward to extend without rewriting the core math.
 
 ## Getting Started
 
@@ -80,6 +109,15 @@ All changes apply live over WebSocket; no page reloads are needed.
 - `Spider` orchestrates all four legs together — gait sequencing for walking, synchronized sit/stand/center routines, and calibration mode.
 - `Spiderserver` hosts the WiFi AP, captive portal DNS, and WebSocket server, parsing simple text commands (e.g. `bodyHeight=70.0`, `leg=2 offC=85`) from the web UI and broadcasting updated state back to all connected clients.
 
+## Future Notes
+
+Planned / possible extensions, made straightforward by the existing modular structure:
+
+- **IMU-based balancing** — add an IMU (e.g. MPU6050) and feed pitch/roll readings into a PID loop that continuously adjusts `bodyPitch`/`bodyRoll` (or per-leg height directly) to keep the body level on uneven terrain. Since `updateKinematicArrays()` already recalculates per-leg height/width trim from `bodyPitch`/`bodyRoll` via `calculateTiltTrim()`, this mostly means replacing manual slider input with a PID controller's output on the same variables — no kinematics rewrite needed.
+- **Remote control input** — because all robot control already flows through simple state changes (`commandedState`, `bodyHeight`, `bodyWidth`, etc. in `Robotstate`) rather than being tightly coupled to the WebSocket parser, an RC receiver, Bluetooth gamepad, or other remote input method can be added as just another input source writing to those same variables, alongside or instead of the web UI.
+
+The decoupled design (state in `Robotstate`, kinematics in `SpiderLeg`, orchestration in `Spider`, I/O in `Spiderserver`) means new input/sensor sources generally plug into the *existing* state variables rather than requiring changes to gait logic or IK code.
+
 ## License
 
-Add your preferred license here (e.g. MIT) before publishing.
+MIT License — see [LICENSE](./LICENSE) for details.
