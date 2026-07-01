@@ -94,6 +94,12 @@ Each leg is its own object with its own pins and position, and handles its own m
 
 All changes apply live over WebSocket; no page reloads are needed.
 
+## Understanding the Inverse Kinematics
+
+If you want to understand how the leg IK math works before diving into `SpiderLeg.cpp`, this video explains it well:
+
+📺 [Inverse Kinematics for a 3-segment leg — YouTube](https://youtu.be/HjmIOKSp7v4?si=qGuz0ecaw_1wg7XF)
+
 ## How to Swap in Your Own Control Scheme
 
 The main robot logic lives in `SpiderLeg`, `Spider`, and `Robotstate` — those are the brains. `Spiderserver` and `Webpage` are just how *this* project talks to the robot over WiFi/WebSocket. You can rip those out entirely and replace them with whatever you want — a Bluetooth remote, an RC receiver, a gamepad, a serial interface — as long as you write to the same variables in `Robotstate`.
