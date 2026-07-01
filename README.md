@@ -4,6 +4,18 @@
 
 A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi access point and web-based control interface for live tuning, calibration, and gait control — no app required, just a browser.
 
+## Demo
+
+**Walking gait**
+
+[![Spider Robot Walking](https://img.youtube.com/vi/MwilIVm9K1Y/0.jpg)](https://youtube.com/shorts/MwilIVm9K1Y)
+
+**Body roll & pitch control**
+
+[![Spider Robot Body Roll and Pitch](https://img.youtube.com/vi/5wvZWfhv1cs/0.jpg)](https://youtube.com/shorts/5wvZWfhv1cs)
+
+> The robot moves significantly more fluidly than the videos suggest — the choppy appearance is purely down to the low frame rate of the recording. The inverse kinematics system interpolates each leg smoothly in real time; what you're seeing is a capture artifact, not the actual motion quality.
+
 ## Features
 
 - **Inverse kinematics leg control** — each leg independently computes coxa/femur/tibia servo angles from X/Y/Z target positions.
