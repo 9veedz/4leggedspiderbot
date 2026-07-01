@@ -94,7 +94,51 @@ Each leg is its own object with its own pins and position, and handles its own m
 
 All changes apply live over WebSocket; no page reloads are needed.
 
-## How It Works
+## How to Swap in Your Own Control Scheme
+
+The main robot logic lives in `SpiderLeg`, `Spider`, and `Robotstate` — those are the brains. `Spiderserver` and `Webpage` are just how *this* project talks to the robot over WiFi/WebSocket. You can rip those out entirely and replace them with whatever you want — a Bluetooth remote, an RC receiver, a gamepad, a serial interface — as long as you write to the same variables in `Robotstate`.
+
+Everything the robot responds to is exposed as simple global variables you can read or write from anywhere:
+
+**Body / Posture**
+| Variable | Type | Description |
+|---|---|---|
+| `bodyHeight` | `float` | Overall body height offset |
+| `bodyWidth` | `float` | Overall body width offset |
+| `bodyStride` | `float` | Step length used in walking gaits |
+| `bodyPitch` | `float` | Forward/back tilt of the body |
+| `bodyRoll` | `float` | Left/right tilt of the body |
+
+**Robot State**
+| Variable | Type | Description |
+|---|---|---|
+| `commandedState` | `RobotStateMode` | What you want the robot to do: `SIT`, `STAND`, `FORWARD`, `REVERSE` |
+| `currentState` | `RobotStateMode` | What the robot is currently doing — declared but not yet actively updated separately from `commandedState`, reserved for future state transition logic |
+| `activeLeg` | `int` | Which leg (0–3) is selected for tuning |
+| `calibrateMode` | `bool` | ⚠️ Declared but currently unused — reserved for a future calibration mode flow |
+| `calibrateLeg` | `int` | ⚠️ Declared but currently unused — intended to track which leg is being calibrated independently of `activeLeg` |
+
+**Computed Per-Leg Arrays** (auto-updated by `updateKinematicArrays()`)
+| Variable | Type | Description |
+|---|---|---|
+| `legHeights[4]` | `float` | Effective height per leg after pitch/roll tilt trim |
+| `legWidths[4]` | `float` | Effective width per leg |
+
+**Per-Leg Parameters** (`legs[0]` through `legs[3]`)
+| Field | Type | Description |
+|---|---|---|
+| `W` | `float` | Manual width trim for this leg |
+| `H` | `float` | Manual height trim for this leg |
+| `L` | `float` | Lift height used during gait steps |
+| `offC / offF / offT` | `float` | Calibration angle offset per joint (coxa/femur/tibia) |
+| `servoC / servoF / servoT` | `int` | Raw manual servo angle (used in calibration mode) |
+| `cMin/cMax` | `int` | Coxa joint safe angle limits |
+| `fMin/fMax` | `int` | Femur joint safe angle limits |
+| `tMin/tMax` | `int` | Tibia joint safe angle limits |
+| `X / Y / Z` | `float` | ⚠️ Stored and persisted but not yet actively read back into gait logic — reserved for future per-leg position tracking |
+| `powerDisabled` | `bool` | If true, this leg's servos are powered off |
+
+
 
 - `Robotstate` holds all shared configuration (body posture, per-leg parameters, current/commanded state) and computes derived kinematic arrays (`legHeights`, `legWidths`) whenever body posture changes, including tilt trim from pitch/roll.
 - `SpiderLeg` converts target X/Y/Z leg positions into joint angles via geometric inverse kinematics, then maps those angles to PWM pulses, accounting for whether the leg is mirrored.
@@ -105,6 +149,7 @@ All changes apply live over WebSocket; no page reloads are needed.
 
 Planned / possible extensions, made straightforward by the existing modular structure:
 
+- **More walking patterns** — turning (left/right), crab walk (lateral movement using the existing `crab()` primitive in `SpiderLeg`), and a dance routine are planned. The gait system is structured as a phase/substep state machine in `Spider.cpp`, so new patterns slot in as additional `walkX()` methods without touching the leg kinematics.
 - **IMU-based balancing** — add an IMU (e.g. MPU6050) and feed pitch/roll readings into a PID loop that continuously adjusts `bodyPitch`/`bodyRoll` (or per-leg height directly) to keep the body level on uneven terrain. Since `updateKinematicArrays()` already recalculates per-leg height/width trim from `bodyPitch`/`bodyRoll` via `calculateTiltTrim()`, this mostly means replacing manual slider input with a PID controller's output on the same variables — no kinematics rewrite needed.
 - **Remote control input** — because all robot control already flows through simple state changes (`commandedState`, `bodyHeight`, `bodyWidth`, etc. in `Robotstate`) rather than being tightly coupled to the WebSocket parser, an RC receiver, Bluetooth gamepad, or other remote input method can be added as just another input source writing to those same variables, alongside or instead of the web UI.
 
