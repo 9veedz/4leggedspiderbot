@@ -24,7 +24,7 @@ A single all-in-one board acting as the central hub for the spiderbot's electron
 | Output filter capacitors | Smooth and regulate the buck converter output |
 | Header pins | Inter-board connections and module mounting |
 
-The robot's inverse kinematics and gait computation run entirely on the phone — the ESP32-S3 receives serial commands over BLE and drives the PCA9685 to output the corresponding PWM signals to each servo.
+The robot's inverse kinematics and gait computation run entirely on the phone — the ESP32-S3 receives commands over wifi html page and drives the PCA9685 to output the corresponding PWM signals to each servo.
 
 ![Design 1 — MCU Board](screenshots/1f.png)
 
