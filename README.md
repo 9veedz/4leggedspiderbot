@@ -4,6 +4,8 @@
 
 A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi access point and web-based control interface for live tuning, calibration, and gait control — no app required, just a browser.
 
+> ⚠️ This is an ongoing hobby project — still actively being developed and subject to changes.
+
 ## Demo
 
 **Walking gait**
@@ -13,7 +15,6 @@ A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi
 **Body roll & pitch control**
 
 [![Spider Robot Body Roll and Pitch](https://img.youtube.com/vi/5wvZWfhv1cs/0.jpg)](https://youtube.com/shorts/5wvZWfhv1cs)
-
 > The robot moves significantly more fluidly than the videos suggest — the choppy appearance is purely down to the low frame rate of the recording. The inverse kinematics system interpolates each leg smoothly in real time; what you're seeing is a capture artifact, not the actual motion quality.
 
 ## Features
@@ -36,24 +37,32 @@ A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi
 
 > **Important — before assembling the legs onto the 3D-printed body:** power each servo individually and set it to **90 degrees** *before* mounting the horn and locking the leg segments onto the printed body. The codebase has calls toward a `spiderCalibrate()` / `calibrateServos()` path, but it is not a complete, working calibration setup as-is — don't rely on it out of the box. Manually centering each servo to 90° before assembly (e.g. with a basic standalone test sketch) is the safer approach until calibration is properly wired up. The IK math and default offsets (`offC`/`offF`/`offT` = 90) assume each joint's mechanical zero/center point lines up with 90° on the servo. If a horn is attached and the leg geometry locked in at the wrong angle, the leg will be physically offset from where the code thinks it is, and you'll fight it with calibration offsets indefinitely instead of starting from a clean baseline.
 
-| Leg | Coxa Pin | Femur Pin | Tibia Pin | Position          | Mirrored |
-|-----|----------|-----------|-----------|--------------------|----------|
-| 0   | 0        | 1         | 2         | Front-left         | No       |
-| 1   | 3        | 4         | 5         | Front-right        | Yes      |
-| 2   | 6        | 7         | 8         | Back-left          | Yes      |
-| 3   | 9        | 10        | 11        | Back-right         | No       |
+| Leg | Coxa Pin | Femur Pin | Tibia Pin | Position    | Mirrored |
+| --- | -------- | --------- | --------- | ----------- | -------- |
+| 0   | 0        | 1         | 2         | Front-left  | No       |
+| 1   | 3        | 4         | 5         | Front-right | Yes      |
+| 2   | 6        | 7         | 8         | Back-left   | Yes      |
+| 3   | 9        | 10        | 11        | Back-right  | No       |
 
 ### Leg Segment Lengths
 
 Each leg has three segments, defined as constants in `SpiderLeg.cpp` and used directly in the inverse kinematics calculations:
 
-| Segment | Joint  | Length (mm) | Description                                |
-|---------|--------|-------------|---------------------------------------------|
-| L1      | Coxa   | 27.5        | Hip joint offset, rotates leg in X/Y plane  |
-| L2      | Femur  | 55.0        | Upper leg segment                           |
-| L3      | Tibia  | 77.5        | Lower leg segment, reaches the ground       |
+| Segment | Joint | Length (mm) | Description                                |
+| ------- | ----- | ----------- | ------------------------------------------ |
+| L1      | Coxa  | 27.5        | Hip joint offset, rotates leg in X/Y plane |
+| L2      | Femur | 55.0        | Upper leg segment                          |
+| L3      | Tibia | 77.5        | Lower leg segment, reaches the ground      |
 
 These are physical measurements of the chassis/leg hardware, used by `calculateIK()` to solve for coxa, femur, and tibia joint angles from a target X/Y/Z foot position. If you build this on different hardware, these three constants are the first thing to update to match your own leg dimensions.
+
+## PCB
+
+The wiring was getting pretty messy and the space inside the 3D-printed body is quite constrained — so the natural next step was to design a proper PCB to clean everything up. Luckily, [PCBWay](https://www.pcbway.com) reached out about a collaboration and sponsored the boards for this project. As a small hobby build with no real following or funding, that was honestly unexpected and really appreciated 🙏
+
+The PCB went through 2 design revisions with a total of 3 boards — including a stacked voltage divider board for reading servo positions. Full details, schematics, and board photos are in the PCB folder:
+
+→ [PCB README — designs, components, and build notes](PCB/redme.md)
 
 ## Project Structure
 
@@ -77,17 +86,17 @@ Each leg is its own object with its own pins and position, and handles its own m
 
 1. Open `SpiderRobot.ino` in Arduino IDE.
 2. Install required libraries via Library Manager:
-   - `Adafruit PWM Servo Driver Library`
-   - `ESPAsyncWebServer`
-   - `AsyncTCP`
-   - `ArduinoJson`
-   - `DNSServer` (bundled with ESP32 core)
+  - `Adafruit PWM Servo Driver Library`
+  - `ESPAsyncWebServer`
+  - `AsyncTCP`
+  - `ArduinoJson`
+  - `DNSServer` (bundled with ESP32 core)
 3. Select your ESP32 board under **Tools > Board**.
 4. Wire the PCA9685 to the ESP32 via I2C and connect all 12 servos.
 5. Flash the sketch.
 6. On boot, the ESP32 creates a WiFi access point:
-   - **SSID:** `ESP32_Spider`
-   - **Password:** `12345678`
+  - **SSID:** `ESP32_Spider`
+  - **Password:** `12345678`
 7. Connect to that network from a phone or laptop. A captive portal should prompt you to open the control page automatically (or browse to `192.168.4.1` manually).
 
 > **Note:** The AP credentials are currently hardcoded in `Spiderserver.cpp`. Change them before deploying anywhere you don't fully control.
@@ -119,44 +128,46 @@ The main robot logic lives in `SpiderLeg`, `Spider`, and `Robotstate` — those 
 Everything the robot responds to is exposed as simple global variables you can read or write from anywhere:
 
 **Body / Posture**
-| Variable | Type | Description |
-|---|---|---|
-| `bodyHeight` | `float` | Overall body height offset |
-| `bodyWidth` | `float` | Overall body width offset |
+
+| Variable     | Type    | Description                       |
+| ------------ | ------- | --------------------------------- |
+| `bodyHeight` | `float` | Overall body height offset        |
+| `bodyWidth`  | `float` | Overall body width offset         |
 | `bodyStride` | `float` | Step length used in walking gaits |
-| `bodyPitch` | `float` | Forward/back tilt of the body |
-| `bodyRoll` | `float` | Left/right tilt of the body |
+| `bodyPitch`  | `float` | Forward/back tilt of the body     |
+| `bodyRoll`   | `float` | Left/right tilt of the body       |
 
 **Robot State**
-| Variable | Type | Description |
-|---|---|---|
-| `commandedState` | `RobotStateMode` | What you want the robot to do: `SIT`, `STAND`, `FORWARD`, `REVERSE` |
-| `currentState` | `RobotStateMode` | What the robot is currently doing — declared but not yet actively updated separately from `commandedState`, reserved for future state transition logic |
-| `activeLeg` | `int` | Which leg (0–3) is selected for tuning |
-| `calibrateMode` | `bool` | ⚠️ Declared but currently unused — reserved for a future calibration mode flow |
-| `calibrateLeg` | `int` | ⚠️ Declared but currently unused — intended to track which leg is being calibrated independently of `activeLeg` |
+
+| Variable         | Type             | Description                                                                                                                                            |
+| ---------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `commandedState` | `RobotStateMode` | What you want the robot to do: `SIT`, `STAND`, `FORWARD`, `REVERSE`                                                                                    |
+| `currentState`   | `RobotStateMode` | What the robot is currently doing — declared but not yet actively updated separately from `commandedState`, reserved for future state transition logic |
+| `activeLeg`      | `int`            | Which leg (0–3) is selected for tuning                                                                                                                 |
+| `calibrateMode`  | `bool`           | ⚠️ Declared but currently unused — reserved for a future calibration mode flow                                                                         |
+| `calibrateLeg`   | `int`            | ⚠️ Declared but currently unused — intended to track which leg is being calibrated independently of `activeLeg`                                        |
 
 **Computed Per-Leg Arrays** (auto-updated by `updateKinematicArrays()`)
-| Variable | Type | Description |
-|---|---|---|
+
+| Variable        | Type    | Description                                         |
+| --------------- | ------- | --------------------------------------------------- |
 | `legHeights[4]` | `float` | Effective height per leg after pitch/roll tilt trim |
-| `legWidths[4]` | `float` | Effective width per leg |
+| `legWidths[4]`  | `float` | Effective width per leg                             |
 
 **Per-Leg Parameters** (`legs[0]` through `legs[3]`)
-| Field | Type | Description |
-|---|---|---|
-| `W` | `float` | Manual width trim for this leg |
-| `H` | `float` | Manual height trim for this leg |
-| `L` | `float` | Lift height used during gait steps |
-| `offC / offF / offT` | `float` | Calibration angle offset per joint (coxa/femur/tibia) |
-| `servoC / servoF / servoT` | `int` | Raw manual servo angle (used in calibration mode) |
-| `cMin/cMax` | `int` | Coxa joint safe angle limits |
-| `fMin/fMax` | `int` | Femur joint safe angle limits |
-| `tMin/tMax` | `int` | Tibia joint safe angle limits |
-| `X / Y / Z` | `float` | ⚠️ Stored and persisted but not yet actively read back into gait logic — reserved for future per-leg position tracking |
-| `powerDisabled` | `bool` | If true, this leg's servos are powered off |
 
-
+| Field                      | Type    | Description                                                                                                            |
+| -------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `W`                        | `float` | Manual width trim for this leg                                                                                         |
+| `H`                        | `float` | Manual height trim for this leg                                                                                        |
+| `L`                        | `float` | Lift height used during gait steps                                                                                     |
+| `offC / offF / offT`       | `float` | Calibration angle offset per joint (coxa/femur/tibia)                                                                  |
+| `servoC / servoF / servoT` | `int`   | Raw manual servo angle (used in calibration mode)                                                                      |
+| `cMin/cMax`                | `int`   | Coxa joint safe angle limits                                                                                           |
+| `fMin/fMax`                | `int`   | Femur joint safe angle limits                                                                                          |
+| `tMin/tMax`                | `int`   | Tibia joint safe angle limits                                                                                          |
+| `X / Y / Z`                | `float` | ⚠️ Stored and persisted but not yet actively read back into gait logic — reserved for future per-leg position tracking |
+| `powerDisabled`            | `bool`  | If true, this leg's servos are powered off                                                                             |
 
 - `Robotstate` holds all shared configuration (body posture, per-leg parameters, current/commanded state) and computes derived kinematic arrays (`legHeights`, `legWidths`) whenever body posture changes, including tilt trim from pitch/roll.
 - `SpiderLeg` converts target X/Y/Z leg positions into joint angles via geometric inverse kinematics, then maps those angles to PWM pulses, accounting for whether the leg is mirrored.
@@ -175,4 +186,4 @@ The decoupled design (state in `Robotstate`, kinematics in `SpiderLeg`, orchestr
 
 ## License
 
-CC BY-NC-SA 4.0 (Attribution-NonCommercial-ShareAlike) — see [LICENSE](./LICENSE) for details. Free for personal/non-commercial use and modification with credit to `9veedz`; selling this project or derivatives of it is not permitted.
+CC BY-NC-SA 4.0 (Attribution-NonCommercial-ShareAlike) — see [LICENSE](LICENSE) for details. Free for personal/non-commercial use and modification with credit to `9veedz`; selling this project or derivatives of it is not permitted.
