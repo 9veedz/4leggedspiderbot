@@ -44,7 +44,6 @@ Same core as Design 1, with a key power upgrade:
 | PCA9685 | 16-channel PWM driver — controls all 12 servo channels |
 | 5V 8A buck converter | High-current step-down — regulates battery voltage directly to 5V @ 8A for servos |
 | MPU-6050 | 6-axis IMU — accelerometer + gyroscope for orientation sensing |
-| Output filter capacitors | Smooth buck output under heavy servo load |
 | Header pins | Stackup interface to voltage divider board |
 
 > The USB-C PD trigger board is dropped in Design 2 — the beefier buck takes battery input directly, removing the dependency on USB-PD negotiation for power.
@@ -54,9 +53,10 @@ Same core as Design 1, with a key power upgrade:
 | Component | Role |
 |---|---|
 | Resistor voltage dividers | One per servo — scales position feedback signal to ADC-safe range |
+| Resistor voltage divider | batery level monitoring |
 | Header pins | Mates with Board 1; routes feedback signals to ESP32-S3 ADC inputs |
 
-This stackup separates the high-current servo drive circuitry from the position sensing signals, reducing noise and simplifying routing on both boards.
+This stackup allows us to tap into the servos internal postiion pot and use it as ref for servo position.
 
 ![Design 2 — MCU Board + Voltage Divider Stackup](screenshots/design2.png)
 
