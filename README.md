@@ -58,9 +58,9 @@ These are physical measurements of the chassis/leg hardware, used by `calculateI
 
 ## PCB
 
-The wiring was getting pretty messy and the space inside the 3D-printed body is quite constrained — so the natural next step was to design a proper PCB to clean everything up. Luckily, [PCBWay](https://www.pcbway.com) reached out about a collaboration and sponsored the boards for this project. As a small hobby build with no real following or funding, that was honestly unexpected and really appreciated 🙏
+The wiring was getting pretty messy and the space inside the 3D-printed body is quite constrained so the natural next step was to design a proper PCB to clean everything up. Luckily, [PCBWay](https://www.pcbway.com) reached out about a collaboration and sponsored the boards for this project. As a small hobby build with no real following or funding, that was honestly unexpected and really appreciated.
 
-The PCB went through 2 design revisions with a total of 3 boards — including a stacked voltage divider board for reading servo positions. Full details, schematics, and board photos are in the PCB folder:
+The PCB went through 2 design revisions with a total of 3 boards including a stacked voltage divider board for reading servo positions(under development). Full details, schematics, and board photos are in the PCB folder:
 
 → [PCB README — designs, components, and build notes](PCB/redme.md)
 
@@ -69,7 +69,7 @@ The PCB went through 2 design revisions with a total of 3 boards — including a
 This is an Arduino IDE sketch. Arduino IDE requires a `.ino` file matching the sketch folder name, but all real logic lives in standard `.cpp`/`.h` files, which the IDE compiles automatically alongside it.
 
 ```
-SpiderRobot/
+code/
 ├── SpiderRobot.ino     # Entry point: setup() / loop()
 ├── Spider.h / .cpp     # High-level robot behavior: stand, sit, walk, calibrate
 ├── SpiderLeg.h / .cpp  # Per-leg inverse kinematics & servo output
