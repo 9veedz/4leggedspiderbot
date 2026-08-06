@@ -1,0 +1,7 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "custom") (type "KiCad") (uri "${KIPRJMOD}/custom.pretty") (options "") (descr ""))
+	(lib (name "s3") (type "KiCad") (uri "/mnt/E640BA6340BA3A5F/downloads/linus progs/s3.pretty") (options "") (descr ""))
+	(lib (name "Library") (type "KiCad") (uri "/home/za_ym/Desktop/esp32s3supermini/Library.pretty") (options "") (descr ""))
+	(lib (name "Library") (type "KiCad") (uri "${KIPRJMOD}/custom.pretty/Library.pretty") (options "") (descr ""))
+)
