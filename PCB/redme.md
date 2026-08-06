@@ -1,4 +1,4 @@
-# 4-Legged Spiderbot — PCB
+ # 4-Legged Spiderbot — PCB
 
 This folder contains the PCB design files for the 4-Legged Spiderbot project, a custom quadruped robot built around an ESP32 microcontroller and PCA9685 PWM driver.
 
@@ -26,8 +26,9 @@ A single all-in-one board acting as the central hub for the spiderbot's electron
 
 The robot's inverse kinematics and gait computation run entirely on the phone — the ESP32-S3 receives serial commands over BLE and drives the PCA9685 to output the corresponding PWM signals to each servo.
 
-![Design 1 — MCU Board](screenshots/design1.png)
+![Design 1 — MCU Board](screenshots/1f.png)
 
+![Design 1 — MCU Board](screenshots/1b.png)
 ---
 
 ### Design 2 — MCU Board + Voltage Divider Stackup (2 Boards)
@@ -58,7 +59,9 @@ Same core as Design 1, with a key power upgrade:
 
 This stackup allows us to tap into the servos internal postiion pot and use it as ref for servo position.
 
-![Design 2 — MCU Board + Voltage Divider Stackup](screenshots/design2.png)
+![Design 2 — MCU Board + Voltage Divider Stackup](screenshots/2f.png)
+
+![Design 2 — MCU Board + Voltage Divider Stackup](screenshots/2b.png)
 
 ---
 
