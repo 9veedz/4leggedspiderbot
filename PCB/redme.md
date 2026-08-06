@@ -2,7 +2,9 @@
 
 So this is the PCB folder for my spiderbot project a 4-legged walking robot I've been building in my spare time. It's been a fun (and sometimes painful) journey getting here.
 
->  **This project is sponsored by [PCBWay](https://www.pcbway.com)!** As a small hobby project with no real following or funding, being approached by PCBWay for sponsorship genuinely means a lot. I'm truly grateful for the support — it's what made getting real boards in my hands possible. More details in the [sponsor section](#sponsor--pcbway) below.
+>  **This project is sponsored by [PCBWay](https://www.pcbway.com)!**
+
+Many thanks to PCBway for sponsoring this project with high-quality PCBs. As a small hobby project with no real following or funding, being approached by PCBWay for sponsorship genuinely means a lot. I'm truly grateful for the support — it's what made getting real boards in my hands possible. More details in the [sponsor section](#sponsor--pcbway) below.
 
 ---
 
