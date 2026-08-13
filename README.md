@@ -62,7 +62,7 @@ The wiring was getting pretty messy and the space inside the 3D-printed body is 
 
 The PCB went through 2 design revisions with a total of 3 boards including a stacked voltage divider board for reading servo positions(under development). Full details, schematics, and board photos are in the PCB folder:
 
-→ [PCB README — designs, components, and build notes](PCB/redme%20%282%29.md)
+→ [PCB README — designs, components, and build notes](PCB/redme\\(2\).md)
 
 ## Project Structure
 
