@@ -102,20 +102,28 @@ Their online quote tool is instant and the turnaround is genuinely fast standard
 
 ---
 
-### My Experience
+My Experience
 
 The spiderbot boards aren't super complex but they're not trivial either 12 servo channels, multiple power rails, a stackup between two boards. I uploaded my Gerbers and got a quote almost immediately, no back and forth.
 
 **Ordering was straightforward:**
 1. Exported Gerbers and drill files from KiCad and compressed them into a single zip file
-2. Uploaded to the PCBWay portal 
-3. most of the parameters are selected by default from the gerber files but you can customize according to your requirements
+2. Uploaded to the PCBWay portal
+3. Most of the parameters are selected by default from the gerber files but you can customize according to your requirements
 4. Order confirmed and out the door within 24 hours
 
 **When the boards arrived:**
 - Well packed anti-static bags inside a solid mailer, no damage
 - V-score lines on the panel were clean and snapped apart easily
 - Soldermask was crisp, silkscreen was readable, no bridging on any pads
+
+![Packaging](screenshots/p1.png)
+
+**Received Boards**
+
+![PCB Received 1](screenshots/r1.png)
+
+![PCB Received 2](screenshots/r2.png)
 
 **Dimensions held up:**
 - Outline matched my design within ±0.1mm
@@ -130,4 +138,3 @@ Honestly for a hobby project like this, PCBWay hit the sweet spot of quality, sp
 
 Full project: [github.com/9veedz/4leggedspiderbot](https://github.com/9veedz/4leggedspiderbot)
 
-PCB files: [PCB folder](https://github.com/9veedz/4leggedspiderbot/tree/main/PCB)
