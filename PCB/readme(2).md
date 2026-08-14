@@ -117,13 +117,13 @@ The spiderbot boards aren't super complex but they're not trivial either 12 serv
 - V-score lines on the panel were clean and snapped apart easily
 - Soldermask was crisp, silkscreen was readable, no bridging on any pads
 
-![Packaging](screenshots/p1.png)
+![Packaging](screenshots/p1.jpg)
 
 **Received Boards**
 
-![PCB Received 1](screenshots/r1.png)
+![PCB Received 1](screenshots/r1.jpg)
 
-![PCB Received 2](screenshots/r2.png)
+![PCB Received 2](screenshots/r2.jpg)
 
 **Dimensions held up:**
 - Outline matched my design within ±0.1mm
