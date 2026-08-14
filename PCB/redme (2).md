@@ -28,9 +28,9 @@ My first attempt everything on one board. Kept it simple.
 | Output filter capacitors | Clean up the buck output |
 | Header pins | Connections and module mounting |
 
-Also broke out multiple I2C ports on separate pins — makes it easy to chain extra sensors or modules without fighting over the same lines.
+Also broke out multiple I2C ports on separate pins makes it easy to chain extra sensors or modules without fighting over the same lines.
 
-The robot gets controlled through a webpage the ESP32-S3 hosts over WiFi — the phone does all the heavy lifting (IK, gait logic) and sends commands down to the PCA9685 which then drives the servos.
+The robot gets controlled through a webpage the ESP32-S3 hosts over WiFi. the phone does all the heavy lifting (IK, gait logic) and sends commands down to the PCA9685 which then drives the servos.
 
 **Front**
 
@@ -44,11 +44,11 @@ The robot gets controlled through a webpage the ESP32-S3 hosts over WiFi — the
 
 ### Design 2 MCU Board + Voltage Divider Stackup (2 Boards)
 
-After getting Design 1 working I wanted to add proper servo position feedback — so I split it into two stacked boards. Also upgraded the power side since the servos were pulling more current than I expected.
+After getting Design 1 working I wanted to add proper servo position feedback so I split it into two stacked boards. Also upgraded the power side since the servos were pulling more current than I expected.
 
 **Board 1 MCU Board**
 
-Pretty much the same as Design 1 but with a beefier buck and dropped the USB-C PD board:
+Pretty much the same as Design 1 but with a beefier buck:
 
 | Component | Role |
 |---|---|
@@ -58,13 +58,13 @@ Pretty much the same as Design 1 but with a beefier buck and dropped the USB-C P
 | MPU-6050 | 6-axis IMU |
 | Header pins | Interface to the voltage divider board stacked on top |
 
-> Dropped the USB-C PD trigger board in this revision — the new buck handles battery input directly so I don't need the PD negotiation anymore.
 
-Also in this revision I mapped out all the GPIOs to header pins — so if I want to hook up extra peripherals, sensors, or expand the project later, the pins are already there and accessible without any rework.
+
+Also in this revision I mapped out all the GPIOs to header pins so if I want to hook up extra peripherals, sensors, or expand the project later, the pins are already there and accessible without any rework.
 
 **Board 2 Voltage Divider Board** (stacks on top of Board 1)
 
-This little board stacks right on top and reads servo positions by tapping into each servo's internal pot:
+This little board stacks right below the mcu and reads servo positions by tapping into each servo's internal pot:
 
 | Component | Role |
 |---|---|
