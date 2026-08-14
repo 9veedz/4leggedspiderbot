@@ -86,6 +86,7 @@ The idea is to tap into the servo's internal position potentiometer and use that
 
 ## Sponsor — PCBWay
 
+<img src="screenshots/logo.png" width="340"/>
 I'm really grateful to **[PCBWay](https://www.pcbway.com)** for sponsoring the PCBs for this project. As a hobby engineer doing this on my own time and budget, getting sponsored boards was a massive help and I honestly wasn't expecting the quality to be this good.
 
 ### What is PCBWay?
