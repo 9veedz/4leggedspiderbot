@@ -1,10 +1,13 @@
 # ESP32 Quadruped Spider Robot
 
-> Built largely through vibe coding — iterating with an AI assistant rather than writing every line from scratch. Logic has been tested where possible, but review the code yourself before trusting it on real hardware, especially the servo angle limits.
+> Built largely through vibe coding, iterating with an AI assistant rather than writing every line from scratch. Logic has been tested where possible, but review the code yourself before trusting it on real hardware, especially the servo angle limits.
 
 A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi access point and web-based control interface for live tuning, calibration, and gait control — no app required, just a browser.
 
 > ⚠️ This is an ongoing hobby project — still actively being developed and subject to changes.
+
+>  **This project is sponsored by [PCBWay](https://www.pcbway.com)!**
+> 
 
 ## Demo
 
