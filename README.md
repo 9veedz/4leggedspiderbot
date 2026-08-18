@@ -4,13 +4,13 @@
 
 A 4-legged (12-servo) walking robot controlled by an ESP32, with a built-in WiFi access point and web-based control interface for live tuning, calibration, and gait control — no app required, just a browser.
 
-> ⚠️ This is an ongoing hobby project — still actively being developed and subject to changes.
-
 
 >  **This project is sponsored by [PCBWay](https://www.pcbway.com)!**
 
-Many thanks to PCBway for sponsoring this project with high-quality PCBs. As a small hobby project with no real following or funding, being approached by PCBWay for sponsorship genuinely means a lot. I'm truly grateful for the support — it's what made getting real boards in my hands possible. More details in the [sponsor section](#sponsor--pcbway) below.
+Many thanks to PCBWay for sponsoring this project with high-quality PCBs. As a small hobby project with no real following or funding, being approached by PCBWay for sponsorship genuinely means a lot. I'm truly grateful for the support — it's what made getting real boards in my hands possible. More details in the [sponsor section](#sponsor--pcbway) below.
 
+
+> ⚠️ This is an ongoing hobby project — still actively being developed and subject to changes.
 ## Demo
 
 **Walking gait**
