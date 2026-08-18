@@ -181,7 +181,7 @@ The PCB went through 2 design revisions with a total of 3 boards including a sta
 
 ## Sponsor — PCBWay
 
-<img src="screenshots/logo.png" width="340"/>
+<img src="PCB/screenshots/logo.png" width="340"/>
 
 I'm really grateful to **[PCBWay](https://www.pcbway.com)** for sponsoring the PCBs for this project. 
 As a hobby engineer doing this on my own time and budget, getting sponsored boards was a massive help and I honestly wasn't expecting the quality to be this good.
@@ -215,13 +215,13 @@ The spiderbot boards aren't super complex but they're not trivial either 12 serv
 - V-score lines on the panel were clean and snapped apart easily
 - Soldermask was crisp, silkscreen was readable, no bridging on any pads
 
-![Packaging](screenshots/p1.jpg)
+![Packaging](PCB/screenshots/p1.jpg)
 
 **Received Boards**
 
-![PCB Received 1](screenshots/r1.jpg)
+![PCB Received 1](PCB/screenshots/r1.jpg)
 
-![PCB Received 2](screenshots/r2.jpg)
+![PCB Received 2](PCB/screenshots/r2.jpg)
 
 **Dimensions held up:**
 - Outline matched my design within ±0.1mm
