@@ -56,14 +56,6 @@ Each leg has three segments, defined as constants in `SpiderLeg.cpp` and used di
 
 These are physical measurements of the chassis/leg hardware, used by `calculateIK()` to solve for coxa, femur, and tibia joint angles from a target X/Y/Z foot position. If you build this on different hardware, these three constants are the first thing to update to match your own leg dimensions.
 
-## PCB
-
-The wiring was getting pretty messy and the space inside the 3D-printed body is quite constrained so the natural next step was to design a proper PCB to clean everything up. Luckily, [PCBWay](https://www.pcbway.com) reached out about a collaboration and sponsored the boards for this project. As a small hobby build with no real following or funding, that was honestly unexpected and really appreciated.
-
-The PCB went through 2 design revisions with a total of 3 boards including a stacked voltage divider board for reading servo positions(under development). Full details, schematics, and board photos are in the PCB folder:
-
-
-→ [PCB README — designs, components, and build notes](PCB/readme(2).md)
 
 ## Project Structure
 
@@ -174,6 +166,68 @@ Everything the robot responds to is exposed as simple global variables you can r
 - `SpiderLeg` converts target X/Y/Z leg positions into joint angles via geometric inverse kinematics, then maps those angles to PWM pulses, accounting for whether the leg is mirrored.
 - `Spider` orchestrates all four legs together — gait sequencing for walking, synchronized sit/stand/center routines, and calibration mode.
 - `Spiderserver` hosts the WiFi AP, captive portal DNS, and WebSocket server, parsing simple text commands (e.g. `bodyHeight=70.0`, `leg=2 offC=85`) from the web UI and broadcasting updated state back to all connected clients.
+
+
+## PCB
+
+The wiring was getting pretty messy and the space inside the 3D-printed body is quite constrained so the natural next step was to design a proper PCB to clean everything up. Luckily, [PCBWay](https://www.pcbway.com) reached out about a collaboration and sponsored the boards for this project. As a small hobby build with no real following or funding, that was honestly unexpected and really appreciated.
+
+The PCB went through 2 design revisions with a total of 3 boards including a stacked voltage divider board for reading servo positions(under development). Full details, schematics, and board photos are in the PCB folder:
+
+## Sponsor — PCBWay
+
+<img src="screenshots/logo.png" width="340"/>
+
+I'm really grateful to **[PCBWay](https://www.pcbway.com)** for sponsoring the PCBs for this project. 
+As a hobby engineer doing this on my own time and budget, getting sponsored boards was a massive help and I honestly wasn't expecting the quality to be this good.
+
+### What is PCBWay?
+
+PCBWay is a PCB manufacturer and fab service out of Shenzhen. They do pretty much everything:
+
+- PCB fabrication (single layer all the way up to 20+ layers, rigid, flex, rigid-flex)
+- PCB assembly (SMT + through-hole, full turnkey)
+- 3D printing (FDM, SLA, SLS, and even metal)
+- CNC machining and sheet metal
+- One-stop prototyping for small runs
+
+Their online quote tool is instant and the turnaround is genuinely fast standard boards can ship in 24 hours.
+
+---
+
+My Experience
+
+The spiderbot boards aren't super complex but they're not trivial either 12 servo channels, multiple power rails, a stackup between two boards. I uploaded my Gerbers and got a quote almost immediately, no back and forth.
+
+**Ordering was straightforward:**
+1. Exported Gerbers and drill files from KiCad and compressed them into a single zip file
+2. Uploaded to the PCBWay portal
+3. Most of the parameters are selected by default from the gerber files but you can customize according to your requirements
+4. Order confirmed and out the door within 24 hours
+
+**When the boards arrived:**
+- Well packed anti-static bags inside a solid mailer, no damage
+- V-score lines on the panel were clean and snapped apart easily
+- Soldermask was crisp, silkscreen was readable, no bridging on any pads
+
+![Packaging](screenshots/p1.jpg)
+
+**Received Boards**
+
+![PCB Received 1](screenshots/r1.jpg)
+
+![PCB Received 2](screenshots/r2.jpg)
+
+**Dimensions held up:**
+- Outline matched my design within ±0.1mm
+- Vias and traces exactly as in the Gerbers
+- Stacking fit between the two boards was spot on
+
+Honestly for a hobby project like this, PCBWay hit the sweet spot of quality, speed, and price. If you're building something similar definitely worth checking them out → [pcbway.com](https://www.pcbway.com)
+
+
+
+→ [PCB README — designs, components, and build notes](PCB/readme(2).md)
 
 ## Future Notes
 
